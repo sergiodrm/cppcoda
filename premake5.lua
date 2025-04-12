@@ -88,12 +88,15 @@ workspace "corelib"
         defines {  }
         includedirs {
             "test/",
-            "corelib/"
+            "corelib/",
+            "thirdparty/googletest/googletest/include"
         }
 
         filter "configurations:Debug"
-        targetname "corelib_test_dbg"
+            links { "thirdparty/googletest/build/lib/debug/gtest", "thirdparty/googletest/build/lib/debug/gmock" }
+            targetname "corelib_test_dbg"
         filter "configurations:Release"
-        targetname "corelib_test"
+            links { "thirdparty/googletest/build/lib/release/gtest", "thirdparty/googletest/build/lib/release/gmock" }
+            targetname "corelib_test"
 
 

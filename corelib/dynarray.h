@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+#include <cmath>
 
 namespace clb
 {
@@ -16,13 +17,13 @@ namespace clb
         dynarray() : m_data(nullptr), m_size(0), m_capacity(0), m_incrementFactor(defaultIncrementFactor) {}
         dynarray(size_type capacity) : m_data(nullptr), m_size(0), m_capacity(0), m_incrementFactor(defaultIncrementFactor)
         {
-            resize(capacity);
+            reserve(capacity);
         }
         ~dynarray() { clear(true); }
 
         void setIncrementFactor(float factor = defaultIncrementFactor) { m_incrementFactor = factor; }
 
-        void resize(size_type newCapacity)
+        void reserve(size_type newCapacity)
         {
             // same as current capacity
             if (newCapacity == m_capacity) 
@@ -41,7 +42,7 @@ namespace clb
                 if (m_size >= newCapacity)
                 {
                     for (size_type i = newCapacity; i < m_size; ++i)
-                        static_cast<value_type*>(&m_data[i * sizeof(value_type)])->~value_type();
+                        destroyItem(i);
                     m_size = newCapacity;
                     shrink();
                 }
@@ -59,6 +60,34 @@ namespace clb
             }
         }
 
+        void resize(size_type newSize)
+        {
+            if (newSize == m_size)
+                return;
+            
+            if (newSize > m_size)
+            {
+                if (newSize > m_capacity)
+                    reserve(newSize);
+                m_size = newSize;
+            }
+            else
+            {
+                for (uint32 i = newSize; i < m_size; ++i)
+                    destroyItem(i);
+                m_size = newSize;
+                shrink();
+            }
+        }
+
+        void fill(const value_type& value, size_type first, size_type count)
+        {
+            size_type end = first + count;
+            clb_assert(end <= m_size);
+            for (size_type i = first; i < end; ++i)
+                constructItem(i, value);
+        }
+
         void shrink()
         {
             if (!m_capacity || m_size == m_capacity)
@@ -71,7 +100,7 @@ namespace clb
         void clear(bool releaseMemory = false)
         {
             for (size_type i = 0; i < m_size; ++i)
-                m_data[i].~value_type();
+                destroyItem(i);
             m_size = 0;
             if (releaseMemory)
                 shrink();
@@ -86,7 +115,7 @@ namespace clb
                 clb_assert(newCapacity > m_capacity);
                 resize(newCapacity);
             }
-            new (&m_data[m_size++]) value_type(value);
+            constructItem(m_size++, value);
             return m_data[m_size-1];
         }
 
@@ -96,8 +125,11 @@ namespace clb
         }
 
         bool isEmpty() const { return m_size == 0; }
+        size_type getSize() const { return m_size; }
+        size_type getCapacity() const { return m_capacity; }
         value_type* getData() { return m_data; }
         const value_type* getData() const { return m_data; }
+        bool isValidIndex(size_type index) { return index < m_size; }
 
         value_type& operator[](size_type index)
         {
@@ -112,6 +144,17 @@ namespace clb
         }
 
     private:
+
+        void constructItem(size_type index, const value_type& value)
+        {
+            new(&m_data[index])value_type(value);
+        }
+
+        void destroyItem(size_type index)
+        {
+            m_data[index].~value_type();
+        }
+
         static value_type* allocate(size_type count)
         {
             value_type* data = (value_type*)malloc(count * sizeof(value_type));
