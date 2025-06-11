@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-namespace clb
+namespace coda
 {
     template <typename T, uint32 N>
     class starray
@@ -21,21 +21,21 @@ namespace clb
 
         value_type& pushBack(const value_type& value)
         {
-            clb_assert(m_size < N);
+            coda_assert(m_size < N);
             new (&m_data[(m_size++) * sizeof(value_type)]) value_type(value);
             return *reinterpret_cast<value_type*>(&m_data[(m_size - 1) * sizeof(value_type)]);
         }
 
         value_type& pushBack()
         {
-            clb_assert(m_size < N);
+            coda_assert(m_size < N);
             new (&m_data[(m_size++) * sizeof(value_type)]) value_type();
             return *reinterpret_cast<value_type*>(&m_data[(m_size - 1) * sizeof(value_type)]);
         }
 
         void resize(size_type newSize)
         {
-            clb_assert(newSize <= N);
+            coda_assert(newSize <= N);
             if (newSize > m_size)
             {
                 for (size_type i = m_size; i < newSize; ++i)
@@ -51,20 +51,20 @@ namespace clb
 
         void popBack()
         {
-            clb_assert(m_size > 0);
+            coda_assert(m_size > 0);
             --m_size;
             reinterpret_cast<value_type*>(&m_data[m_size * sizeof(value_type)])->~value_type();
         }
 
         value_type& getBack()
         {
-            clb_assert(m_size > 0);
+            coda_assert(m_size > 0);
             return *reinterpret_cast<value_type*>(&m_data[(m_size - 1) * sizeof(value_type)]);
         }
 
         const value_type& getBack() const
         {
-            clb_assert(m_size > 0);
+            coda_assert(m_size > 0);
             return *reinterpret_cast<const value_type*>(&m_data[(m_size - 1) * sizeof(value_type)]);
         }
 
@@ -78,7 +78,7 @@ namespace clb
 
         const value_type& operator[](size_type index) const
         {
-            clb_assert(index < m_size);
+            coda_assert(index < m_size);
             return *reinterpret_cast<const value_type*>(&m_data[index * sizeof(value_type)]);
         }
 

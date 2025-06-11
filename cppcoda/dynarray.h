@@ -1,16 +1,18 @@
 #pragma once
 
 #include "common.h"
+#include "allocator.h"
 #include <cmath>
 
-namespace clb
+namespace coda
 {
-    template <typename T>
+    template <typename T, typename AllocatorType = coda::baseallocator>
     class dynarray
     {
         typedef dynarray<T> self_type;
         typedef T value_type;
         typedef uint32 size_type;
+        typedef AllocatorType allocator_type;
     public:
         static constexpr float defaultIncrementFactor = 1.5f;
 
@@ -83,7 +85,7 @@ namespace clb
         void fill(const value_type& value, size_type first, size_type count)
         {
             size_type end = first + count;
-            clb_assert(end <= m_size);
+            coda_assert(end <= m_size);
             for (size_type i = first; i < end; ++i)
                 constructItem(i, value);
         }
@@ -108,11 +110,11 @@ namespace clb
 
         value_type& pushBack(const value_type& value)
         {
-            clb_assert(m_size <= m_capacity && m_incrementFactor > 1.f);
+            coda_assert(m_size <= m_capacity && m_incrementFactor > 1.f);
             if (m_size == m_capacity)
             {
                 size_type newCapacity = static_cast<size_type>(ceilf((float)m_capacity * m_incrementFactor));
-                clb_assert(newCapacity > m_capacity);
+                coda_assert(newCapacity > m_capacity);
                 resize(newCapacity);
             }
             constructItem(m_size++, value);
@@ -133,13 +135,13 @@ namespace clb
 
         value_type& operator[](size_type index)
         {
-            clb_assert(index < m_size);
+            coda_assert(index < m_size);
             return &m_data[index];
         }
 
         const value_type& operator[](size_type index) const
         {
-            clb_assert(index < m_size);
+            coda_assert(index < m_size);
             return &m_data[index];
         }
 
@@ -157,29 +159,29 @@ namespace clb
 
         static value_type* allocate(size_type count)
         {
-            value_type* data = (value_type*)malloc(count * sizeof(value_type));
-            clb_assert(data != nullptr);
+            value_type* data = (value_type*)allocator_type::allocate(count * sizeof(value_type));
+            coda_assert(data != nullptr);
             return data;
         }
 
         static value_type* reallocate(value_type* data, size_type count)
         {
             if (data == nullptr)
-                return allocate(count);
+                return (value_type*)allocator_type::allocate(count * sizeof(value_type));
             if (count == 0)
             {
-                release(data);
+                allocator_type::release(data);
                 return nullptr;
             }
-            value_type* newData = (value_type*)realloc(data, count * sizeof(value_type));
-            clb_assert(newData != nullptr);
+            value_type* newData = (value_type*)allocator_type::reallocate(data, count * sizeof(value_type));
+            coda_assert(newData != nullptr);
             return newData;
         }
 
         static void release(value_type* data)
         {
-            clb_assert(data != nullptr);
-            free(data);
+            coda_assert(data != nullptr);
+            allocator_type::release(data);
         }
 
     private:

@@ -1,29 +1,29 @@
 #pragma once
 
-#define CLB_USE_STD
+#define CODA_USE_STD
 
-#define clb_dummy_macro ((void)0)
+#define coda_dummy_macro ((void)0)
 
-#define clb_assert(x) ((x) ? clb_dummy_macro : clb::throwException("Assertion failed: "#x, __FILE__, __LINE__))
-#define clb_assert_msg(x, msg) ((x) ? clb_dummy_macro : clb::throwException("Assertion failed: " msg, __FILE__, __LINE__))
+#define coda_assert(x) ((x) ? coda_dummy_macro : coda::throwException("Assertion failed: "#x, __FILE__, __LINE__))
+#define coda_assert_msg(x, msg) ((x) ? coda_dummy_macro : coda::throwException("Assertion failed: " msg, __FILE__, __LINE__))
 
 #ifdef _DEBUG
-#define clb_dbg_assert(x) clb_assert(x)
-#define clb_dbg_assert_msg(x, msg) clb_assert_msg(x,msg)
+#define coda_dbg_assert(x) coda_assert(x)
+#define coda_dbg_assert_msg(x, msg) coda_assert_msg(x,msg)
 #else
-#define clb_dbg_assert(x) clb_dummy_macro
-#define clb_dbg_assert_msg(x, msg) clb_dummy_macro
+#define coda_dbg_assert(x) coda_dummy_macro
+#define coda_dbg_assert_msg(x, msg) coda_dummy_macro
 #endif
 
 
-#ifdef CLB_USE_STD
+#ifdef CODA_USE_STD
 #include <limits>
 #else
 #error Currently not supported without some stdlib functionalities
 #endif
 
 
-namespace clb
+namespace coda
 {
     // Commonly used types
     using byte = unsigned char;
@@ -50,13 +50,14 @@ namespace clb
     // Exception handling
     typedef void (*ExceptionHandler)(const char* message, const char* file, int line);
     void setExceptionHandler(ExceptionHandler handler);
+    void dumpException(const char* message, const char* file, int line);
     void throwException(const char* message, const char* file, int line);
 
     // Cast functions with limit checking
     template <typename T, typename U>
     T safe_cast(U value)
     {
-        clb_assert(value >= static_cast<U>(TypeLimit<T>::min()) && value <= static_cast<U>(TypeLimit<T>::max()));
+        coda_assert(value >= static_cast<U>(TypeLimit<T>::min()) && value <= static_cast<U>(TypeLimit<T>::max()));
         return static_cast<T>(value);
     }
 }

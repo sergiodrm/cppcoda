@@ -19,10 +19,10 @@ newaction {
     end
 }
 
-workspace "corelib"
+workspace "cppcoda"
     configurations {"Debug", "Release"}
     platforms {"Win64"}
-    startproject "corelib_test"
+    startproject "cppcoda_test"
     flags {"MultiProcessorCompile"}
 
     -- filter config
@@ -43,19 +43,19 @@ workspace "corelib"
     -- deactive filter
     filter{}
         
-    project "corelib"
+    project "cppcoda"
         kind "StaticLib"
         language "C++"
         cppdialect "C++20"
 
         targetdir "%{outputdir}"
-        targetname "corelib"
+        targetname "cppcoda"
         objdir "%{temporaldir}"
-        location "%{wks.location}/corelib/"
+        location "%{wks.location}/cppcoda/"
 
         defines {  }
         files { 
-            "corelib/**.h", "corelib/**.cpp",
+            "cppcoda/**.h", "cppcoda/**.cpp",
         }
 
         includedirs {
@@ -73,7 +73,7 @@ workspace "corelib"
             }
         
     
-    project "corelib_test"
+    project "cppcoda_test"
         kind "ConsoleApp"
         language "C++"
         cppdialect "C++20"
@@ -82,21 +82,21 @@ workspace "corelib"
         objdir "%{temporaldir}"
         location "%{wks.location}/test"
         
-        links { "corelib" }
+        links { "cppcoda" }
         files { "test/**.h", "test/**.cpp"}
 
         defines {  }
         includedirs {
             "test/",
-            "corelib/",
+            "cppcoda/",
             "thirdparty/googletest/googletest/include"
         }
 
         filter "configurations:Debug"
             links { "thirdparty/googletest/build/lib/debug/gtest", "thirdparty/googletest/build/lib/debug/gmock" }
-            targetname "corelib_test_dbg"
+            targetname "cppcoda_test_dbg"
         filter "configurations:Release"
             links { "thirdparty/googletest/build/lib/release/gtest", "thirdparty/googletest/build/lib/release/gmock" }
-            targetname "corelib_test"
+            targetname "cppcoda_test"
 
 
