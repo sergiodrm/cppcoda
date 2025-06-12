@@ -30,6 +30,7 @@ namespace coda
         const char* c_str() const { return m_data; }
         uint32 getCapacity() const { return m_capacity; }
         uint32 getLength() const;
+        bool isEmpty() const { return m_data ? !*m_data : true; }
 
         void set(const char* str);
         void set(const string_base& str);

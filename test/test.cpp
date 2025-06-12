@@ -217,14 +217,17 @@ namespace coda
 			coda::string str("Hello");
 			const void* data = str.c_str();
 			size_t s = str.getCapacity();
+			EXPECT_FALSE(str.isEmpty());
 			str.clear();
 			EXPECT_EQ(str.c_str(), data);
 			EXPECT_EQ(str.getLength(), 0);
 			EXPECT_EQ(str.getCapacity(), s);
+			EXPECT_TRUE(str.isEmpty());
 			str.clear(true);
 			EXPECT_EQ(str.c_str(), nullptr);
 			EXPECT_EQ(str.getLength(), 0);
 			EXPECT_EQ(str.getCapacity(), 0);
+			EXPECT_TRUE(str.isEmpty());
 		}
 
 		TEST(string, comparison)
