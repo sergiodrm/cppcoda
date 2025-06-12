@@ -1,2 +1,2 @@
 
-..\bin\release\corelib_test.exe
+..\bin\release\cppcoda_test.exe

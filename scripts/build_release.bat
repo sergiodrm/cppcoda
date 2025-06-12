@@ -1,2 +1,2 @@
 
-msbuild ..\corelib.sln /p:configuration=release /t:build /v:m
+msbuild ..\cppcoda.sln /p:configuration=release /t:build /v:m
