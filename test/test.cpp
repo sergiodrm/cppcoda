@@ -227,6 +227,23 @@ namespace coda
 			EXPECT_EQ(str.getCapacity(), 0);
 		}
 
+		TEST(string, comparison)
+		{
+			coda::string str1("Hello!");
+			coda::string str2;
+			EXPECT_FALSE(str1 == str2);
+			str1.clear();
+			EXPECT_TRUE(str1 == str2);
+			str1.clear(true);
+			EXPECT_TRUE(str1 == str2);
+			str2 = "Hello!";
+			EXPECT_FALSE(str1 == str2);
+			str1 = "Hello!";
+			EXPECT_TRUE(str1 == str2);
+			str1 = "Hello\0!";
+			EXPECT_FALSE(str1 == str2);
+		}
+
 		/************************************************************************/
 		/* Hash function test                                                   */
 		/************************************************************************/
@@ -244,11 +261,11 @@ namespace coda
 
 		TEST(hashtable, fill)
 		{
-			coda::hashtable<uint32, float> h;
+			coda::hashtable<uint32, float> h(1<<16);
 
 			for (uint32 i = 0; i < h.getSize(); ++i)
 			{
-				float r = 0.2f * sinf(i) * (rand() % h.getSize());
+				float r = 0.2f * sinf((float)i) * (rand() % h.getSize());
 				float* p = h.createItem(i, r);
 				coda::hashtableitemid id = h.findId(i);
 				EXPECT_TRUE(id.id != coda::hashtable_invalidId);

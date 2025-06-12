@@ -25,6 +25,8 @@ namespace coda
 
         string_base& operator=(const char* str);
 
+        bool operator==(const string_base& other) const;
+
         const char* c_str() const { return m_data; }
         uint32 getCapacity() const { return m_capacity; }
         uint32 getLength() const;
@@ -99,6 +101,27 @@ namespace coda
     {
         set(str);
         return *this;
+    }
+
+    template<typename AllocatorType>
+    inline bool string_base<AllocatorType>::operator==(const string_base& other) const
+    {
+        if (!m_data && !other.m_data)
+            return true;
+        if (m_data && !other.m_data)
+        {
+            if (!*m_data) 
+                return true;
+            return false;
+        }
+        if (other.m_data && !m_data)
+        {
+            if (!*other.m_data)
+                return true;
+            return false;
+        }
+
+        return !strcmp(m_data, other.m_data);
     }
 
     template<typename AllocatorType>
