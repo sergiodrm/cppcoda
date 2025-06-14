@@ -134,15 +134,21 @@ namespace coda
     template<typename AllocatorType>
     inline void string_base<AllocatorType>::set(const char* str)
     {
-        coda_assert(str);
-        uint32 s = safe_cast<uint32>(strlen(str)) + 1;
-        if (m_capacity < s)
+        if (!str || !*str)
         {
-            m_data = reallocate(m_data, s);
-            m_capacity = s;
+            clear();
         }
-        memcpy_s(m_data, m_capacity, str, s);
-        coda_assert(m_data[s - 1] == 0);
+        else
+        {
+            uint32 s = safe_cast<uint32>(strlen(str)) + 1;
+            if (m_capacity < s)
+            {
+                m_data = reallocate(m_data, s);
+                m_capacity = s;
+            }
+            memcpy_s(m_data, m_capacity, str, s);
+            coda_assert(m_data[s - 1] == 0);
+        }
     }
 
     template<typename AllocatorType>

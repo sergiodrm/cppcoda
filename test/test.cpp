@@ -211,6 +211,11 @@ namespace coda
 			str.set("Hello");
 			EXPECT_STREQ(str.c_str(), "Hello");
 			EXPECT_EQ(str.getLength(), 5);
+			coda::string str2;
+			str = str2;
+			EXPECT_TRUE(str.isEmpty());
+			EXPECT_TRUE(str == str2);
+			EXPECT_TRUE(str.getCapacity() == 6);
 		}
 
 		TEST(string, clear) {
